@@ -14,6 +14,9 @@ class MyDataClass {
   }
 
   rust::Vec < rust::String > getData(const size_t index) const {
+    if (index >= m_data.size()) {
+      throw std::out_of_range("Index out of range");
+    }
     rust::Vec < rust::String > sentence;
     for (const auto & str: m_data[index]) {
       sentence.push_back(str);
