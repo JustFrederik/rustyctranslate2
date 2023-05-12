@@ -41,9 +41,9 @@ class MyDataClass {
 
 class MyTranslator {
   public: MyTranslator(const std::string & model_path,
-    const bool use_gpu): m_translator(std::string(model_path),
+    const bool use_gpu, const bool fast): m_translator(std::string(model_path),
     use_gpu ? ctranslate2::Device::CUDA : ctranslate2::Device::CPU,
-    use_gpu ? ctranslate2::ComputeType::FLOAT16 : ctranslate2::ComputeType::INT8, {
+    fast ? (use_gpu ? ctranslate2::ComputeType::FLOAT16 : ctranslate2::ComputeType::INT8) : ctranslate2::ComputeType::DEFAULT, {
       0
     }, {}) {}
 
@@ -91,8 +91,8 @@ class MyTranslator {
 };
 
 std::unique_ptr < MyTranslator > new_translator(const std::string & model,
-  const bool gpu) {
-  return std::make_unique < MyTranslator > (model, gpu);
+  const bool gpu, const bool fast) {
+  return std::make_unique < MyTranslator > (model, gpu, fast);
 }
 
 std::unique_ptr < MyDataClass > new_data() {

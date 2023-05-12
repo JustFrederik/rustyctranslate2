@@ -24,7 +24,11 @@ mod ffi {
         include!("rustyctranslate2/include/translator.h");
         type MyTranslator;
         type MyDataClass;
-        fn new_translator(model: &CxxString, use_gpu: bool) -> Result<UniquePtr<MyTranslator>>;
+        fn new_translator(
+            model: &CxxString,
+            use_gpu: bool,
+            compressed: bool,
+        ) -> Result<UniquePtr<MyTranslator>>;
         fn translate_batch(
             self: Pin<&mut MyTranslator>,
             data: &MyDataClass,
@@ -50,10 +54,10 @@ pub struct CTranslator {
 }
 
 impl CTranslator {
-    pub fn new(path: PathBuf, use_gpu: bool) -> Result<Self, String> {
+    pub fn new(path: PathBuf, use_gpu: bool, compressed: bool) -> Result<Self, String> {
         let path = path.to_str().map(|v| v.to_string()).unwrap();
         let_cxx_string!(model = path);
-        let model = ffi::new_translator(&model, use_gpu).map_err(|e| e.to_string())?;
+        let model = ffi::new_translator(&model, use_gpu, compressed).map_err(|e| e.to_string())?;
         Ok(Self { model })
     }
 
