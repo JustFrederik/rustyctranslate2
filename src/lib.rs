@@ -145,16 +145,29 @@ mod ffi {
         fn pushData(self: Pin<&mut MyDataClass>, item: Vec<String>);
         fn getData(self: &MyDataClass, data: usize) -> Result<Vec<String>>;
         #[allow(clippy::too_many_arguments)]
-        fn get_options(beam_size: usize, patience: f32,  length_penalty : f32,
-                       coverage_penalty : f32,  repetition_penalty : f32,
-                       no_repeat_ngram_size : usize,  disable_unk : bool,
-                       prefix_bias_beta : f32,  return_end_token : bool,
-                       use_vmap : bool,  num_hypotheses : usize,
-                       return_scores : bool,  return_attention : bool,
-                       return_alternatives : bool,  min_alternative_expansion_prob : f32,
-                       replace_unknowns : bool,  max_input_length : usize,
-                       max_decoding_length : usize,  min_decoding_length : usize,
-                       sampling_topk : usize,  sampling_temperature : f32) -> UniquePtr<CTranslateOptions>;
+        fn get_options(
+            beam_size: usize,
+            patience: f32,
+            length_penalty: f32,
+            coverage_penalty: f32,
+            repetition_penalty: f32,
+            no_repeat_ngram_size: usize,
+            disable_unk: bool,
+            prefix_bias_beta: f32,
+            return_end_token: bool,
+            use_vmap: bool,
+            num_hypotheses: usize,
+            return_scores: bool,
+            return_attention: bool,
+            return_alternatives: bool,
+            min_alternative_expansion_prob: f32,
+            replace_unknowns: bool,
+            max_input_length: usize,
+            max_decoding_length: usize,
+            min_decoding_length: usize,
+            sampling_topk: usize,
+            sampling_temperature: f32,
+        ) -> UniquePtr<CTranslateOptions>;
     }
 }
 
@@ -183,7 +196,12 @@ impl CTranslator {
             .model
             .as_mut()
             .ok_or_else(|| "mut model is none".to_string())?
-            .translate_batch(&data, &options, max_batch_size.unwrap_or(0), batch_type.to_bool())
+            .translate_batch(
+                &data,
+                &options,
+                max_batch_size.unwrap_or(0),
+                batch_type.to_bool(),
+            )
             .map_err(|e| e.to_string())?;
         Self::extract_output(v)
     }
@@ -211,7 +229,6 @@ impl CTranslator {
             )
             .map_err(|e| e.to_string())?;
         Self::extract_output(v)
-        
     }
 
     fn generate_input(input: Vec<Vec<String>>) -> Result<UniquePtr<MyDataClass>, String> {
@@ -233,9 +250,31 @@ impl CTranslator {
         Ok(res)
     }
 
-    fn get_options(&self, options: Option<TranslationOptions>) -> UniquePtr<CTranslateOptions>{
+    fn get_options(&self, options: Option<TranslationOptions>) -> UniquePtr<CTranslateOptions> {
         let o = options.unwrap_or_default();
-        ffi::get_options(o.beam_size, o.patience, o.length_penalty, o.coverage_penalty, o.repetition_penalty, o.no_repeat_ngram_size, o.disable_unk, o.prefix_bias_beta, o.return_end_token, o.use_vmap, o.num_hypotheses, o.return_scores, o.return_attention, o.return_alternatives, o.min_alternative_expansion_prob, o.replace_unknowns, o.max_input_length, o.max_decoding_length, o.min_decoding_length, o.sampling_topk, o.sampling_temperature)
+        ffi::get_options(
+            o.beam_size,
+            o.patience,
+            o.length_penalty,
+            o.coverage_penalty,
+            o.repetition_penalty,
+            o.no_repeat_ngram_size,
+            o.disable_unk,
+            o.prefix_bias_beta,
+            o.return_end_token,
+            o.use_vmap,
+            o.num_hypotheses,
+            o.return_scores,
+            o.return_attention,
+            o.return_alternatives,
+            o.min_alternative_expansion_prob,
+            o.replace_unknowns,
+            o.max_input_length,
+            o.max_decoding_length,
+            o.min_decoding_length,
+            o.sampling_topk,
+            o.sampling_temperature,
+        )
     }
 }
 
@@ -247,7 +286,11 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let model = CTranslator::new(PathBuf::from_str("jparacrawl/base-en-ja").unwrap(), false, true);
+        let model = CTranslator::new(
+            PathBuf::from_str("jparacrawl/base-en-ja").unwrap(),
+            false,
+            true,
+        );
         assert!(model.is_ok());
         let tokens = ["▁H", "ell", "o", "▁world", "!"]
             .into_iter()
