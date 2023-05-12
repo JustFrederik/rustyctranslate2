@@ -82,6 +82,38 @@ impl CTranslator {
         }
         Ok(res)
     }
+
+    pub fn translate_batch_target(
+        &mut self,
+        input: Vec<Vec<String>>,
+        max_batch_size: Option<usize>,
+        batch_type: BatchType,
+        target: Vec<String>,
+    ) -> Result<Vec<Vec<String>>, String> {
+        let mut data = ffi::new_data();
+        for item in input {
+            data.as_mut()
+                .ok_or_else(|| "mut mydataclass is none".to_string())?
+                .pushData(item);
+        }
+        let v = self
+            .model
+            .as_mut()
+            .ok_or_else(|| "mut model is none".to_string())?
+            .translate_batch_target(
+                &data,
+                target,
+                max_batch_size.unwrap_or(0),
+                batch_type.to_bool(),
+            )
+            .map_err(|e| e.to_string())?;
+        let mut res = vec![];
+        let length = v.getLength();
+        for index in 0..length {
+            res.push(v.getData(index).map_err(|e| e.to_string())?);
+        }
+        Ok(res)
+    }
 }
 
 #[cfg(test)]

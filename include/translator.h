@@ -69,7 +69,7 @@ class MyTranslator {
     }
     const std::vector < std::vector < std::string >> batch(data.get_all());
     const auto options = ctranslate2::TranslationOptions();
-    auto translation = m_translator.translate_batch(batch, options, max_batch_size,
+    auto translation = m_translator.translate_batch(batch, target_v, options, max_batch_size,
       batch_type_example ? ctranslate2::BatchType::Examples :
       ctranslate2::BatchType::Tokens);
     return std::make_unique < MyDataClass > (extract(translation));
