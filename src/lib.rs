@@ -171,6 +171,10 @@ mod ffi {
     }
 }
 
+unsafe impl Sync for ffi::MyTranslator {}
+unsafe impl Sync for ffi::MyDataClass {}
+unsafe impl Sync for ffi::CTranslateOptions {}
+
 pub struct CTranslator {
     model: UniquePtr<MyTranslator>,
 }
